@@ -15,6 +15,8 @@ import EmployerDashboard from './pages/employer/Dashboard';
 import EmployerJobs from './pages/employer/Jobs';
 import EmployerApplications from './pages/employer/Applications';
 import EmployerCompany from './pages/employer/Company';
+import Favorites from './pages/Favorites';
+import Notifications from './pages/Notifications';
 
 function PrivateRoute({ children, roles }: { children: React.ReactNode; roles?: string[] }) {
   const { isAuthenticated, user } = useAuth();
@@ -38,6 +40,8 @@ function AppRoutes() {
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
           <Route path="/resumes" element={<PrivateRoute roles={['seeker']}><Resumes /></PrivateRoute>} />
           <Route path="/applications" element={<PrivateRoute roles={['seeker']}><Applications /></PrivateRoute>} />
+        <Route path="/favorites" element={<PrivateRoute roles={['seeker']}><Favorites /></PrivateRoute>} />
+        <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
           <Route path="/employer" element={<PrivateRoute roles={['employer']}><EmployerDashboard /></PrivateRoute>} />
           <Route path="/employer/jobs" element={<PrivateRoute roles={['employer']}><EmployerJobs /></PrivateRoute>} />
           <Route path="/employer/applications" element={<PrivateRoute roles={['employer']}><EmployerApplications /></PrivateRoute>} />
