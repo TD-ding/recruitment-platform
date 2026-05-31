@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "${HOST_PORT:-3001}:3001"
+    environment:
+      - PORT=3001
+      - JWT_SECRET=${JWT_SECRET:-recruitment-platform-secret-key}
+      - DB_PATH=/app/data/recruitment.db
+    volumes:
+      - backend-data:/app/data
+      - backend-uploads:/app/uploads
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    environment:
+      - VITE_API_URL=/api
+    restart: unless-stopped
+
+  admin-frontend:
+    build: ./admin-frontend
+    ports:
+      - "${ADMIN_PORT:-5174}:80"
+    environment:
+      - VITE_API_URL=/api
+    restart: unless-stopped
+
+volumes:
+  backend-data:
+  backend-uploads:

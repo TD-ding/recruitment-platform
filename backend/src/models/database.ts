@@ -4,6 +4,7 @@ import path from 'path';
 const DB_PATH = path.join(__dirname, '../../data/recruitment.db');
 
 let db: sqlite3.Database;
+let dbInitialized = false;
 
 export function getDb(): sqlite3.Database {
   if (!db) {
@@ -14,6 +15,10 @@ export function getDb(): sqlite3.Database {
     db.run('PRAGMA foreign_keys = ON');
   }
   return db;
+}
+
+export function isDbInitialized(): boolean {
+  return dbInitialized;
 }
 
 export function initDb(): Promise<void> {
@@ -118,7 +123,7 @@ export function initDb(): Promise<void> {
           // Insert default admin if not exists
           database.run(
             `INSERT OR IGNORE INTO users (email, password, role, name) VALUES ('admin@recruitment.com', '$2a$10$placeholder', 'admin', 'System Admin')`,
-            (e) => { if (e) reject(e); else resolve(); }
+            (e) => { if (e) reject(e); else { dbInitialized = true; resolve(); } }
           );
         }
       });
