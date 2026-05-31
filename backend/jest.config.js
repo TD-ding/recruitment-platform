@@ -1,5 +1,8 @@
 module.exports = {
-  presets: [['ts-jest', { tsconfig: 'tsconfig.json' }]],
+  preset: 'ts-jest',
   testEnvironment: 'node',
   testMatch: ['**/test/**/*.test.ts'],
+  transform: {
+    '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.json' }],
+  },
 };
