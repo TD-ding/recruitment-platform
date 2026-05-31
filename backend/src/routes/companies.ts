@@ -4,22 +4,13 @@ import { authMiddleware } from '../middleware/auth';
 
 const router = Router();
 
-// Public: get company detail
-router.get('/:id', (req: Request, res: Response) => {
+// Employer: get my company (must be before /:id)
+router.get('/employer/mine', authMiddleware(['employer']), (req: Request, res: Response) => {
   const db = getDb();
-  db.get('SELECT * FROM companies WHERE id = ? AND status = "approved"', [req.params.id], (err, row) => {
+  const user = (req as any).user;
+  db.get('SELECT * FROM companies WHERE user_id = ?', [user.userId], (err, row) => {
     if (err) { res.status(500).json({ error: '查询失败' }); return; }
-    if (!row) { res.status(404).json({ error: '公司不存在' }); return; }
-    res.json(row);
-  });
-});
-
-// Public: get company jobs
-router.get('/:id/jobs', (req: Request, res: Response) => {
-  const db = getDb();
-  db.all('SELECT * FROM jobs WHERE company_id = ? AND status = "approved" ORDER BY created_at DESC', [req.params.id], (err, rows) => {
-    if (err) { res.status(500).json({ error: '查询失败' }); return; }
-    res.json(rows);
+    res.json(row || null);
   });
 });
 
@@ -36,7 +27,7 @@ router.post('/', authMiddleware(['employer']), (req: Request, res: Response) => 
   db.run(
     `INSERT INTO companies (user_id, name, description, industry, size, location, website)
      VALUES (?, ?, ?, ?, ?, ?, ?)
-     ON CONFLICT(user_id) DO UPDATE SET name=?, description=?, industry=?, size=?, location=?, website=?, updated_at=datetime('now')`,
+     ON CONFLICT(user_id) DO UPDATE SET name=?, description=?, industry=?, size=?, location=?, website=?, status='pending', updated_at=datetime('now')`,
     [user.userId, name, description || null, industry || null, size || null, location, website || null,
      name, description || null, industry || null, size || null, location, website || null],
     function (err) {
@@ -46,13 +37,22 @@ router.post('/', authMiddleware(['employer']), (req: Request, res: Response) => 
   );
 });
 
-// Employer: get my company
-router.get('/employer/mine', authMiddleware(['employer']), (req: Request, res: Response) => {
+// Public: get company detail
+router.get('/:id', (req: Request, res: Response) => {
   const db = getDb();
-  const user = (req as any).user;
-  db.get('SELECT * FROM companies WHERE user_id = ?', [user.userId], (err, row) => {
+  db.get('SELECT * FROM companies WHERE id = ? AND status = "approved"', [req.params.id], (err, row) => {
     if (err) { res.status(500).json({ error: '查询失败' }); return; }
-    res.json(row || null);
+    if (!row) { res.status(404).json({ error: '公司不存在' }); return; }
+    res.json(row);
+  });
+});
+
+// Public: get company jobs
+router.get('/:id/jobs', (req: Request, res: Response) => {
+  const db = getDb();
+  db.all('SELECT * FROM jobs WHERE company_id = ? AND status = "approved" ORDER BY created_at DESC', [req.params.id], (err, rows) => {
+    if (err) { res.status(500).json({ error: '查询失败' }); return; }
+    res.json(rows);
   });
 });
 

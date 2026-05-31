@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "lint": "eslint src/",
-    "test": "jest --forceExit --detectOpenHandles"
+    "test": "jest --forceExit --detectOpenHandles",
+    "seed": "ts-node-dev src/seed.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

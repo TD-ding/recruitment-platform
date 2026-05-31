@@ -75,4 +75,21 @@ router.get('/me', authMiddleware(), (req: Request, res: Response) => {
   });
 });
 
+// Update current user profile
+router.put('/me', authMiddleware(), (req: Request, res: Response) => {
+  const { name, phone } = req.body;
+  const user = (req as any).user;
+  const db = getDb();
+
+  db.run(
+    'UPDATE users SET name = ?, phone = ?, updated_at = datetime("now") WHERE id = ?',
+    [name, phone || null, user.userId],
+    function (err) {
+      if (err) { res.status(500).json({ error: '更新失败' }); return; }
+      if (this.changes === 0) { res.status(404).json({ error: '用户不存在' }); return; }
+      res.json({ message: '更新成功' });
+    }
+  );
+});
+
 export default router;
