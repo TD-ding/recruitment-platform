@@ -11,6 +11,7 @@ export default function JobDetail() {
   const [selectedResume, setSelectedResume] = useState('');
   const [coverLetter, setCoverLetter] = useState('');
   const [message, setMessage] = useState('');
+  const [favorited, setFavorited] = useState(false);
   const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
@@ -24,8 +25,21 @@ export default function JobDetail() {
         const def = res.data.find((r: Resume) => r.is_default);
         if (def) setSelectedResume(String(def.id));
       }).catch(() => {});
+      api.get(`/favorites/check/${id}`).then(res => setFavorited(res.data.favorited)).catch(() => {});
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, id]);
+
+  const handleFavorite = async () => {
+    try {
+      if (favorited) {
+        await api.delete(`/favorites/${id}`);
+        setFavorited(false);
+      } else {
+        await api.post('/favorites', { job_id: Number(id) });
+        setFavorited(true);
+      }
+    } catch {}
+  };
 
   const handleApply = async () => {
     if (!selectedResume) { setMessage('请选择简历'); return; }
@@ -42,7 +56,15 @@ export default function JobDetail() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="bg-white rounded-lg shadow-sm border p-8">
-        <h1 className="text-2xl font-bold text-gray-800">{job.title}</h1>
+        <div className="flex justify-between items-start">
+          <h1 className="text-2xl font-bold text-gray-800">{job.title}</h1>
+          {isAuthenticated && user?.role === 'seeker' && (
+            <button onClick={handleFavorite}
+              className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${favorited ? 'bg-red-50 text-red-500 hover:bg-red-100' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>
+              {favorited ? '♥ 已收藏' : '♡ 收藏'}
+            </button>
+          )}
+        </div>
         <div className="flex items-center gap-4 mt-3">
           {job.salary_min && job.salary_max && (
             <span className="text-orange-500 font-semibold text-lg">{job.salary_min}-{job.salary_max}K</span>
