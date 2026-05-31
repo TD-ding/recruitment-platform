@@ -25,8 +25,10 @@ export default function Navbar() {
                   <>
                     <Link to="/resumes" className="text-gray-600 hover:text-primary-600">我的简历</Link>
                     <Link to="/applications" className="text-gray-600 hover:text-primary-600">投递记录</Link>
+                    <Link to="/favorites" className="text-gray-600 hover:text-primary-600">收藏</Link>
                   </>
                 )}
+                <Link to="/notifications" className="text-gray-600 hover:text-primary-600">通知</Link>
                 {user.role === 'employer' && (
                   <>
                     <Link to="/employer/jobs" className="text-gray-600 hover:text-primary-600">职位管理</Link>
