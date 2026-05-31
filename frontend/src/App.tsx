@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -24,23 +25,26 @@ function PrivateRoute({ children, roles }: { children: React.ReactNode; roles?: 
 
 function AppRoutes() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/jobs" element={<JobList />} />
-        <Route path="/jobs/:id" element={<JobDetail />} />
-        <Route path="/companies/:id" element={<CompanyDetail />} />
-        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-        <Route path="/resumes" element={<PrivateRoute roles={['seeker']}><Resumes /></PrivateRoute>} />
-        <Route path="/applications" element={<PrivateRoute roles={['seeker']}><Applications /></PrivateRoute>} />
-        <Route path="/employer" element={<PrivateRoute roles={['employer']}><EmployerDashboard /></PrivateRoute>} />
-        <Route path="/employer/jobs" element={<PrivateRoute roles={['employer']}><EmployerJobs /></PrivateRoute>} />
-        <Route path="/employer/applications" element={<PrivateRoute roles={['employer']}><EmployerApplications /></PrivateRoute>} />
-        <Route path="/employer/company" element={<PrivateRoute roles={['employer']}><EmployerCompany /></PrivateRoute>} />
-      </Routes>
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/jobs" element={<JobList />} />
+          <Route path="/jobs/:id" element={<JobDetail />} />
+          <Route path="/companies/:id" element={<CompanyDetail />} />
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/resumes" element={<PrivateRoute roles={['seeker']}><Resumes /></PrivateRoute>} />
+          <Route path="/applications" element={<PrivateRoute roles={['seeker']}><Applications /></PrivateRoute>} />
+          <Route path="/employer" element={<PrivateRoute roles={['employer']}><EmployerDashboard /></PrivateRoute>} />
+          <Route path="/employer/jobs" element={<PrivateRoute roles={['employer']}><EmployerJobs /></PrivateRoute>} />
+          <Route path="/employer/applications" element={<PrivateRoute roles={['employer']}><EmployerApplications /></PrivateRoute>} />
+          <Route path="/employer/company" element={<PrivateRoute roles={['employer']}><EmployerCompany /></PrivateRoute>} />
+        </Routes>
+      </main>
+      <Footer />
     </div>
   );
 }
