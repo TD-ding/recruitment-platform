@@ -32,6 +32,21 @@ router.get('/', (req: Request, res: Response) => {
   });
 });
 
+// Employer: get my jobs (must be before /:id to avoid route conflict)
+router.get('/employer/mine', authMiddleware(['employer']), (req: Request, res: Response) => {
+  const db = getDb();
+  const user = (req as any).user;
+
+  db.all(
+    `SELECT j.*, c.name as company_name FROM jobs j JOIN companies c ON j.company_id = c.id WHERE c.user_id = ? ORDER BY j.created_at DESC`,
+    [user.userId],
+    (err, rows) => {
+      if (err) { res.status(500).json({ error: '查询失败' }); return; }
+      res.json(rows);
+    }
+  );
+});
+
 // Public: get job detail
 router.get('/:id', (req: Request, res: Response) => {
   const db = getDb();
@@ -71,21 +86,6 @@ router.post('/', authMiddleware(['employer']), (req: Request, res: Response) => 
       }
     );
   });
-});
-
-// Employer: get my jobs
-router.get('/employer/mine', authMiddleware(['employer']), (req: Request, res: Response) => {
-  const db = getDb();
-  const user = (req as any).user;
-
-  db.all(
-    `SELECT j.*, c.name as company_name FROM jobs j JOIN companies c ON j.company_id = c.id WHERE c.user_id = ? ORDER BY j.created_at DESC`,
-    [user.userId],
-    (err, rows) => {
-      if (err) { res.status(500).json({ error: '查询失败' }); return; }
-      res.json(rows);
-    }
-  );
 });
 
 // Employer: update job
